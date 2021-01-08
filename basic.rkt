@@ -46,6 +46,7 @@
      (for-each (lambda (command)
                  (collect-variables command id-set))
                (syntax->list #`(command ...)))
+     (define first-line-number (car (syntax->list #`(line-number ...))))
      #`(begin
          #,@(map (lambda (variable)
                    #`(define #,variable #f))
@@ -60,7 +61,8 @@
                        #,(translate-command #`basic command call-next-line)))
                  (syntax->list #`(line-number ...))
                  (append (cdr (syntax->list #`(line-number ...))) '(#f))
-                 (syntax->list #`(command ...)))))))
+                 (syntax->list #`(command ...)))
+         #,(translate-command #`basic #`(goto #,first-line-number) #f)))))
 
 (define goto #f)
 (define := #f)
@@ -99,8 +101,7 @@
      (collect-variables #`else id-set))
     (_ (void))))
     
-
-(basic
+#;(basic
  (5 (:= a 42)) ; A = 42
  (7 (if (= a 42) (:= b 1) (:= b 2)))
  (8 (gosub 1000))
